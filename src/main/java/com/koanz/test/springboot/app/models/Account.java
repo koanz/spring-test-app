@@ -46,7 +46,7 @@ public class Account {
     public void debit(BigDecimal amount) {
         BigDecimal newBalance = this.balance.subtract(amount);
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-            throw new NotEnoughMoneyException("The amount transferred cannot exceed the available balance.");
+            throw new NotEnoughMoneyException("The amount transferred cannot exceed the available balance. Current balance available: " + this.getBalance());
         }
 
         this.balance = newBalance;

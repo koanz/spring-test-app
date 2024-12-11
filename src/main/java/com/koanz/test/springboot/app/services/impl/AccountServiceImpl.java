@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Service
 public class AccountServiceImpl implements AccountService {
     private AccountRepository repository;
     private BankRepository bankRepository;
@@ -35,21 +34,16 @@ public class AccountServiceImpl implements AccountService {
     public BigDecimal checkBalance(Long id) {
         Account account = repository.findById(id);
 
-        /*if(account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
-
-        }*/
-
         return account.getBalance();
     }
 
     @Override
-    public void transferMoneyFromTo(Long fromAccountId, Long toAccountId, BigDecimal amount, Long bankId) {
+    public void wireMoneyFromTo(Long fromAccountId, Long toAccountId, BigDecimal amount, Long bankId) {
         Account accountOrigin = repository.findById(fromAccountId);
-        Account accountDestiny = repository.findById(toAccountId);
-
         accountOrigin.debit(amount);
         repository.update(accountOrigin);
 
+        Account accountDestiny = repository.findById(toAccountId);
         accountDestiny.credit(amount);
         repository.update(accountDestiny);
 

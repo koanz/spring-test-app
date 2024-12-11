@@ -15,5 +15,5 @@ public interface AccountService {
     int getTotalTransfer(Long bancoId);
     BigDecimal checkBalance(Long id);
 
-    void transferMoneyFromTo(Long fromAccountId, Long toAccountId, BigDecimal amount, Long bankId);
+    void wireMoneyFromTo(Long fromAccountId, Long toAccountId, BigDecimal amount, Long bankId);
 }
