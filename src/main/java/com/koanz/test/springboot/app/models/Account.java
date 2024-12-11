@@ -1,13 +1,20 @@
 package com.koanz.test.springboot.app.models;
 
 import com.koanz.test.springboot.app.exceptions.NotEnoughMoneyException;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
+@Table(name = "accounts")
 public class Account {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String person;
+
     private BigDecimal balance;
 
     public Account() {
