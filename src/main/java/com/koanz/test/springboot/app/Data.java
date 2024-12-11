@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 public class Data {
 
     public static Account createAccount001() {
-        return new Account(1L, "John Doe", new BigDecimal("10000"));
+        return new Account(1L, "John Doe", new BigDecimal("1000"));
     }
 
     public static Account createAccount002() {
-        return new Account(2L, "Jane Doe", new BigDecimal("3000"));
+        return new Account(2L, "Jane Doe", new BigDecimal("2000"));
     }
 
     public static Bank createBank() {
