@@ -55,7 +55,7 @@ public class JpaIntegrationTest {
     }
 
     @Test
-    void testSave() {
+    void testSaveAccount() {
         // Given
         Account accountPepe = new Account(null, "Pepe", new BigDecimal("3000"));
 
@@ -71,7 +71,7 @@ public class JpaIntegrationTest {
     }
 
     @Test
-    void testUpdate() {
+    void testUpdateAccount() {
         // Given
         Account accountPepe = new Account(null, "Pepe", new BigDecimal("3000"));
 
@@ -91,5 +91,20 @@ public class JpaIntegrationTest {
         // Then
         assertEquals("Pepe", accountUpdated.getPerson());
         assertEquals("3800", accountUpdated.getBalance().toPlainString());
+    }
+
+    @Test
+    void testDeleteAccount() {
+        Account account = accountRepository.findById(2L).orElseThrow();
+
+        assertEquals("Jane Doe", account.getPerson());
+
+        accountRepository.delete(account);
+        assertThrows(NoSuchElementException.class, () -> {
+//            accountRepository.findByPerson("Jane Doe").orElseThrow();
+            accountRepository.findById(2L).orElseThrow();
+        });
+
+        assertEquals(1, accountRepository.findAll().size());
     }
 }
