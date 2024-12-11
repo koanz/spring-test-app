@@ -14,24 +14,31 @@ import com.koanz.test.springboot.app.services.impl.AccountServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 
 @SpringBootTest
 class SpringbootTestApplicationTests {
 
+	@MockitoBean
 	AccountRepository accountRepository;
 
+	@MockitoBean
 	BankRepository bankRepository;
 
+	@Autowired
 	AccountService service;
 
 	@BeforeEach
 	void setUp() {
-		accountRepository = mock(AccountRepository.class);
-		bankRepository = mock(BankRepository.class);
-		service = new AccountServiceImpl(accountRepository, bankRepository);
+		//accountRepository = mock(AccountRepository.class);
+		//bankRepository = mock(BankRepository.class);
+		//service = new AccountServiceImpl(accountRepository, bankRepository);
 	}
 
 	@Test
@@ -101,5 +108,19 @@ class SpringbootTestApplicationTests {
 
 		verify(accountRepository, times(5)).findById(anyLong());
 		verify(accountRepository, never()).findAll();
+	}
+
+	@Test
+	void contextLoads3() {
+		when(accountRepository.findById(1L)).thenReturn(createAccount001());
+
+		Account account001 = service.findById(1L);
+		Account account002 = service.findById(1L);
+
+		assertSame(account001, account002);
+		assertTrue(account001 == account002);
+		assertEquals("John Doe", account001.getPerson());
+		assertEquals("John Doe", account002.getPerson());
+		verify(accountRepository, times(2)).findById(1L);
 	}
 }
