@@ -50,17 +50,17 @@ class SpringbootTestApplicationTests {
 		BigDecimal balanceAccountOrigin = service.checkBalance(1L);
 		BigDecimal balanceAccountDestiny = service.checkBalance(2L);
 
-		assertEquals("10000", balanceAccountOrigin.toPlainString());
-		assertEquals("3000", balanceAccountDestiny.toPlainString());
+		assertEquals("1000", balanceAccountOrigin.toPlainString());
+		assertEquals("2000", balanceAccountDestiny.toPlainString());
 
-		service.wireMoneyFromTo(1L, 2L, new BigDecimal("2500"), 1L);
+		service.wireMoneyFromTo(1L, 2L, new BigDecimal("100"), 1L);
 
 		balanceAccountOrigin = service.checkBalance(1L);
 		balanceAccountDestiny = service.checkBalance(2L);
 		int totalTransferBank = service.getTotalTransfer(1L);
 
-		assertEquals("7500", balanceAccountOrigin.toPlainString());
-		assertEquals("5500", balanceAccountDestiny.toPlainString());
+		assertEquals("900", balanceAccountOrigin.toPlainString());
+		assertEquals("2100", balanceAccountDestiny.toPlainString());
 		assertEquals(1, totalTransferBank);
 
 		verify(accountRepository, times(3)).findById(1L);
@@ -83,18 +83,18 @@ class SpringbootTestApplicationTests {
 		BigDecimal balanceAccountOrigin = service.checkBalance(1L);
 		BigDecimal balanceAccountDestiny = service.checkBalance(2L);
 
-		assertEquals("10000", balanceAccountOrigin.toPlainString());
-		assertEquals("3000", balanceAccountDestiny.toPlainString());
+		assertEquals("1000", balanceAccountOrigin.toPlainString());
+		assertEquals("2000", balanceAccountDestiny.toPlainString());
 
 		assertThrows(NotEnoughMoneyException.class, () -> {
-			service.wireMoneyFromTo(1L, 2L, new BigDecimal("11000"), 1L);
+			service.wireMoneyFromTo(1L, 2L, new BigDecimal("1100"), 1L);
 		});
 
 		balanceAccountOrigin = service.checkBalance(1L);
 		balanceAccountDestiny = service.checkBalance(2L);
 
-		assertEquals("10000", balanceAccountOrigin.toPlainString());
-		assertEquals("3000", balanceAccountDestiny.toPlainString());
+		assertEquals("1000", balanceAccountOrigin.toPlainString());
+		assertEquals("2000", balanceAccountDestiny.toPlainString());
 
 		int totalTransferBank = service.getTotalTransfer(1L);
 		assertEquals(0, totalTransferBank);
