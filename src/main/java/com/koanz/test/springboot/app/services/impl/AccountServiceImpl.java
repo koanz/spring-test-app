@@ -5,11 +5,11 @@ import com.koanz.test.springboot.app.models.Bank;
 import com.koanz.test.springboot.app.repositories.AccountRepository;
 import com.koanz.test.springboot.app.repositories.BankRepository;
 import com.koanz.test.springboot.app.services.AccountService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+@Service
 public class AccountServiceImpl implements AccountService {
     private AccountRepository repository;
     private BankRepository bankRepository;
