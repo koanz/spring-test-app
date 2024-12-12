@@ -1,11 +1,17 @@
 package com.koanz.test.springboot.app.models.dtos;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.math.BigDecimal;
 
 public class TransactionDto {
+    @JsonProperty("account_origin_id")
     private Long accountOriginId;
+
+    @JsonProperty("account_destiny_id")
     private Long accountDestinyId;
 
+    @JsonProperty("bank_id")
     private Long bankId;
     private BigDecimal amount;
 
