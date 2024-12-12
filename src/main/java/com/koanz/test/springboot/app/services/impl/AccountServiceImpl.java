@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -21,9 +23,33 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
+    public Account save(String person, BigDecimal balance) {
+        Optional<Account> account = repository.findByPerson(person);
+
+        if(account.isPresent()) {
+            throw new RuntimeException("Account of this persona already exists: " + person);
+        }
+
+        Account newAccount = new Account();
+        newAccount.setPerson(person);
+        newAccount.setBalance(balance);
+
+        newAccount = repository.save(newAccount);
+
+        return newAccount;
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Account findById(Long id) {
         return repository.findById(id).orElseThrow();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Account> findAll() {
+        return repository.findAll();
     }
 
     @Override

@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
-    //void save(Account account);
+    Account save(String person, BigDecimal balance);
     //void update(Account account);
     Account findById(Long id);
 
-    //List<Account> findAll();
+    List<Account> findAll();
 
     int getTotalTransfer(Long bancoId);
     BigDecimal checkBalance(Long id);
