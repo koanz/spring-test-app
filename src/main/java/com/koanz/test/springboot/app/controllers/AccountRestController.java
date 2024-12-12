@@ -5,6 +5,7 @@ import com.koanz.test.springboot.app.models.dtos.AccountDto;
 import com.koanz.test.springboot.app.models.dtos.TransactionDto;
 import com.koanz.test.springboot.app.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,8 +44,8 @@ public class AccountRestController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> create(@RequestBody AccountDto request) {
-        Account newAccount = service.save(request.getPerson(), request.getBalance());
+    public ResponseEntity<?> create(@RequestBody Account request) {
+        Account newAccount = service.save(request);
 
         Map<String, Object> message = new HashMap<>();
         message.put("date", LocalDate.now().toString());
@@ -52,6 +53,6 @@ public class AccountRestController {
         message.put("message", "The Account has been created.");
         message.put("account", newAccount);
 
-        return ResponseEntity.ok(message);
+        return ResponseEntity.status(HttpStatus.CREATED).body(message);
     }
 }

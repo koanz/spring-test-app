@@ -24,16 +24,16 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public Account save(String person, BigDecimal balance) {
-        Optional<Account> account = repository.findByPerson(person);
+    public Account save(Account account) {
+        Optional<Account> accountOpt = repository.findByPerson(account.getPerson());
 
-        if(account.isPresent()) {
-            throw new RuntimeException("Account of this persona already exists: " + person);
+        if(accountOpt.isPresent()) {
+            throw new RuntimeException("Account of this persona already exists: " + account.getPerson());
         }
 
         Account newAccount = new Account();
-        newAccount.setPerson(person);
-        newAccount.setBalance(balance);
+        newAccount.setPerson(account.getPerson());
+        newAccount.setBalance(account.getBalance());
 
         newAccount = repository.save(newAccount);
 

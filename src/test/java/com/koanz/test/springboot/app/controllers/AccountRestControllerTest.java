@@ -3,6 +3,7 @@ package com.koanz.test.springboot.app.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koanz.test.springboot.app.models.Account;
+import com.koanz.test.springboot.app.models.dtos.AccountDto;
 import com.koanz.test.springboot.app.models.dtos.TransactionDto;
 import com.koanz.test.springboot.app.services.AccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import static com.koanz.test.springboot.app.Data.*;
@@ -108,5 +109,30 @@ class AccountRestControllerTest {
                         .andExpect(jsonPath("$[1].balance").value("2000"))
                         .andExpect(jsonPath("$", hasSize(2)))
                         .andExpect(content().json(mapper.writeValueAsString(accounts)));
+
+        verify(service).findAll();
+    }
+
+    @Test
+    void testSave() throws Exception {
+        // Given
+        Account newAccount = new Account(null, "Pepe", new BigDecimal("3000"));
+        when(service.save(any())).then(invocationOnMock -> {
+            Account a = invocationOnMock.getArgument(0);
+            a.setId(3L);
+            return a;
+        });
+
+        // When
+        mvc.perform(post("/api/accounts/create").contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(newAccount)))
+        // Then
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.account.id", is(3)))
+                .andExpect(jsonPath("$.account.person", is("Pepe")))
+                .andExpect(jsonPath("$.account.balance", is(3000)));
+
+        verify(service).save(any());
     }
 }

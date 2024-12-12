@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AccountService {
-    Account save(String person, BigDecimal balance);
+    Account save(Account account);
     //void update(Account account);
     Account findById(Long id);
 
