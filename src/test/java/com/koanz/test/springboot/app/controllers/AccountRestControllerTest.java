@@ -3,7 +3,6 @@ package com.koanz.test.springboot.app.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koanz.test.springboot.app.models.Account;
-import com.koanz.test.springboot.app.models.dtos.AccountDto;
 import com.koanz.test.springboot.app.models.dtos.TransactionDto;
 import com.koanz.test.springboot.app.services.AccountService;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +24,6 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 import static com.koanz.test.springboot.app.Data.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
