@@ -1,5 +1,6 @@
 package com.koanz.test.springboot.app.controllers;
 
+import com.koanz.test.springboot.app.models.Account;
 import com.koanz.test.springboot.app.models.dtos.TransactionDto;
 import com.koanz.test.springboot.app.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class AccountRestController {
     private AccountService service;
 
     @GetMapping("/detail/{id}")
-    public ResponseEntity<?> getDetailById(@PathVariable Long id) {
+    public ResponseEntity<Account> getDetailById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
