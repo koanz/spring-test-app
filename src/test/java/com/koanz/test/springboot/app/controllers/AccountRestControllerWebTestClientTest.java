@@ -3,9 +3,9 @@ package com.koanz.test.springboot.app.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.koanz.test.springboot.app.models.Account;
 import com.koanz.test.springboot.app.models.dtos.TransactionDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -14,7 +14,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.*;
@@ -23,6 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.junit.jupiter.api.Assertions.*;
 
 
+@TestMethodOrder(MethodOrderer.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class AccountRestControllerWebTestClientTest {
 
@@ -37,6 +40,7 @@ class AccountRestControllerWebTestClientTest {
     }
 
     @Test
+    @Order(1)
     void testWireMoney() throws JsonProcessingException {
         // Given
         TransactionDto request = new TransactionDto();
@@ -83,5 +87,70 @@ class AccountRestControllerWebTestClientTest {
                 .jsonPath("$.transaction.amount").isEqualTo(request.getAmount())*/
                 .json(mapper.writeValueAsString(message));
 
+    }
+
+    @Test
+    @Order(2)
+    void testgetDetailById1() {
+        // Given
+        Account expected = new Account(1L, "John Doe", new BigDecimal("900.00"));
+
+        // When
+        client.get().uri("/api/accounts/detail/{id}", expected.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+        // Then
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Account.class)
+                .consumeWith(response -> {
+                    Account received = response.getResponseBody();
+                    assertEquals(expected.getId(), received.getId());
+                    assertEquals(expected.getPerson(), received.getPerson());
+                    assertEquals(expected.getBalance(), received.getBalance());
+                });
+    }
+
+    @Test
+    @Order(3)
+    void testgetDetailById2() {
+        // Given
+        Account expected = new Account(2L, "Jane Doe", new BigDecimal("2100.00"));
+
+        // When
+        client.get().uri("/api/accounts/detail/{id}", expected.getId())
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                // Then
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(Account.class)
+                .consumeWith(response -> {
+                    Account account = response.getResponseBody();
+                    assertEquals(expected.getId(), account.getId());
+                    assertEquals(expected.getPerson(), account.getPerson());
+                    assertEquals(expected.getBalance(), account.getBalance());
+                });
+    }
+
+    @Test
+    void testGetAccount() {
+        // Given
+        List<Account> expected = Arrays.asList(
+                new Account(1L, "John Doe", new BigDecimal("900.00")),
+                new Account(2L, "Jane Doe", new BigDecimal("2100.00")));
+
+        // When
+        client.get().uri("/api/accounts/list")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+        // Then
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody(List.class)
+                .consumeWith(response -> {
+                    List<Account> received = (List<Account>) response.getResponseBody();
+
+                });
     }
 }
