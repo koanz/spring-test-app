@@ -1,5 +1,7 @@
 package com.koanz.test.springboot.app.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.koanz.test.springboot.app.models.dtos.TransactionDto;
 import org.junit.jupiter.api.*;
@@ -12,6 +14,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -34,7 +39,7 @@ class AccountRestControllerTestRestTemplateTest {
 
     @Test
     @Order(1)
-    void testWireMoney() {
+    void testWireMoney() throws JsonProcessingException {
         // Given
         TransactionDto request = new TransactionDto();
         request.setAccountOriginId(1L);
@@ -56,6 +61,22 @@ class AccountRestControllerTestRestTemplateTest {
         assertTrue(response.contains("{\"date\":\"2024-12-13\",\"message\":\"The Transfer has been completed.\"," +
                 "\"transaction\":{\"amount\":100,\"account_origin_id\":1,\"account_destiny_id\":2,\"bank_id\":1}," +
                 "\"status\":\"OK\"}"));
+
+        JsonNode json = mapper.readTree(response);
+        assertEquals(LocalDate.now().toString(), json.path("date").asText());
+        assertEquals("The Transfer has been completed.", json.path("message").asText());
+        assertEquals(1L, json.path("transaction").path("account_origin_id").asLong());
+        assertEquals(2L, json.path("transaction").path("account_destiny_id").asLong());
+        assertEquals(1L, json.path("transaction").path("bank_id").asLong());
+        assertEquals("100", json.path("transaction").path("amount").asText());
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("date", LocalDate.now().toString());
+        message.put("status", "OK");
+        message.put("message", "The Transfer has been completed.");
+        message.put("transaction", request);
+
+        assertEquals(mapper.writeValueAsString(message), response);
     }
 
     private String getUri(String endpoint) {
