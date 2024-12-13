@@ -242,7 +242,8 @@ class AccountRestControllerWebTestClientTest {
         client.get().uri("/api/accounts/detail/3")
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
-                .expectStatus().is5xxServerError();
+                .expectStatus().isNotFound()
+                .expectBody().isEmpty();
     }
 
 }

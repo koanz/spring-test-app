@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -21,7 +22,15 @@ public class AccountRestController {
 
     @GetMapping("/detail/{id}")
     public ResponseEntity<Account> getDetailById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+        Account account = null;
+
+        try {
+            account = service.findById(id);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(account);
     }
 
     @GetMapping("/list")
