@@ -85,4 +85,11 @@ public class AccountServiceImpl implements AccountService {
         bankRepository.save(bank);
     }
 
+    @Override
+    @Transactional
+    public void delete(Long id) {
+        Account account = repository.findById(id).orElseThrow();
+        repository.delete(account);
+    }
+
 }

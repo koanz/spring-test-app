@@ -17,4 +17,6 @@ public interface AccountService {
     BigDecimal checkBalance(Long id);
 
     void wireMoneyFromTo(Long fromAccountId, Long toAccountId, BigDecimal amount, Long bankId);
+
+    void delete(Long id);
 }
