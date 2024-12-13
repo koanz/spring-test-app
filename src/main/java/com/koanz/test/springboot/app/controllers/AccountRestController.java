@@ -54,4 +54,16 @@ public class AccountRestController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(message);
     }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        service.delete(id);
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("date", LocalDate.now().toString());
+        message.put("status", "OK");
+        message.put("message", "The Account has been deleted.");
+
+        return ResponseEntity.ok(message);
+    }
 }
