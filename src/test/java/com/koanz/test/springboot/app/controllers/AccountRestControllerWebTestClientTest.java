@@ -24,7 +24,6 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class AccountRestControllerWebTestClientTest {
@@ -198,5 +197,52 @@ class AccountRestControllerWebTestClientTest {
                         e.printStackTrace();
                     }
                 });
+    }
+
+    @Test
+    @Order(6)
+    void testDeleteAccount() {
+        // Given
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("date", LocalDate.now().toString());
+        message.put("status", "OK");
+        message.put("message", "The Account has been deleted.");
+
+        client.get().uri("/api/accounts/list")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                // Then
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(Account.class)
+                .hasSize(3);
+
+        // When
+        client.delete().uri("/api/accounts/delete/3")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+        // Then
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .consumeWith(response -> {
+                    try {
+                        JsonNode json = mapper.readTree(response.getResponseBody());
+                        assertEquals(LocalDate.now().toString(), json.path("date").asText());
+                        assertEquals(message.get("message"), json.path("message").asText());
+                    } catch(IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        client.get().uri("/api/accounts/list")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                // Then
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(Account.class)
+                .hasSize(2);
     }
 }
