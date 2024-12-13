@@ -25,7 +25,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@TestMethodOrder(MethodOrderer.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = RANDOM_PORT)
 class AccountRestControllerWebTestClientTest {
 
@@ -126,15 +126,16 @@ class AccountRestControllerWebTestClientTest {
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
                 .expectBody(Account.class)
                 .consumeWith(response -> {
-                    Account account = response.getResponseBody();
-                    assertEquals(expected.getId(), account.getId());
-                    assertEquals(expected.getPerson(), account.getPerson());
-                    assertEquals(expected.getBalance(), account.getBalance());
+                    Account received = response.getResponseBody();
+                    assertEquals(expected.getId(), received.getId());
+                    assertEquals(expected.getPerson(), received.getPerson());
+                    assertEquals(expected.getBalance(), received.getBalance());
                 });
     }
 
     @Test
-    void testGetAccount() {
+    @Order(4)
+    void testGetAccounts() {
         // Given
         List<Account> expected = Arrays.asList(
                 new Account(1L, "John Doe", new BigDecimal("900.00")),
@@ -147,10 +148,55 @@ class AccountRestControllerWebTestClientTest {
         // Then
                 .expectStatus().isOk()
                 .expectHeader().contentType(MediaType.APPLICATION_JSON)
-                .expectBody(List.class)
+                .expectBodyList(Account.class)
                 .consumeWith(response -> {
-                    List<Account> received = (List<Account>) response.getResponseBody();
+                    List<Account> received = response.getResponseBody();
+                    assertNotNull(received);
+                    assertEquals(2, received.size());
+                    assertEquals(expected.get(0).getId(), received.get(0).getId());
+                    assertEquals(expected.get(0).getPerson(), received.get(0).getPerson());
+                    assertEquals(expected.get(0).getBalance(), received.get(0).getBalance());
+                    assertEquals(expected.get(1).getId(), received.get(1).getId());
+                    assertEquals(expected.get(1).getPerson(), received.get(1).getPerson());
+                    assertEquals(expected.get(1).getBalance(), received.get(1).getBalance());
+                })
+                .hasSize(2)
+                .value(hasSize(2));
+    }
 
+    @Test
+    @Order(5)
+    void testSave() throws JsonProcessingException {
+        // Given
+        Account account = new Account(null, "Pepe", new BigDecimal("1000"));
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("date", LocalDate.now().toString());
+        message.put("status", "OK");
+        message.put("message", "The Account has been created.");
+        message.put("account", account);
+
+        // When
+        client.post().uri("/api/accounts/create")
+                .accept(MediaType.APPLICATION_JSON)
+                .bodyValue(account)
+                .exchange()
+        // Then
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .consumeWith(response -> {
+                    try {
+                        JsonNode json = mapper.readTree(response.getResponseBody());
+                        assertEquals(LocalDate.now().toString(), json.path("date").asText());
+                        assertEquals(message.get("message"), json.path("message").asText());
+                        assertNotNull(json.path("account"));
+                        assertEquals(3L, json.path("account").path("id").asLong());
+                        assertEquals(account.getPerson(), json.path("account").path("person").asText());
+                        assertEquals(account.getBalance().toPlainString(), json.path("account").path("balance").asText());
+                    } catch(IOException e) {
+                        e.printStackTrace();
+                    }
                 });
     }
 }
